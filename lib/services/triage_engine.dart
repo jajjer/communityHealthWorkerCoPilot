@@ -75,9 +75,9 @@ class TriageEngine {
       }
 
       // Step 4: Second inference → plain-language verdict
-      onStep(const StepGeneratingVerdict());
+      onStep(StepGeneratingVerdict(call));
       final verdictPrompt = LlmService.verdictPrompt(protocol, asrResult.transcript);
-      await _llm.runVerdictInference(verdictPrompt);
+      final verdictText = await _llm.runVerdictInference(verdictPrompt);
       await _llm.dispose();
 
       // Step 5: GPS + audit log
@@ -100,6 +100,7 @@ class TriageEngine {
         transcript: asrResult.transcript,
         functionCall: call,
         conditionLabel: _conditionLabel(call.condition),
+        verdictText: verdictText,
         timestamp: timestamp,
         latitude: pos?.latitude,
         longitude: pos?.longitude,
@@ -142,8 +143,8 @@ class TriageEngine {
         );
       }
 
-      onStep(const StepGeneratingVerdict());
-      await _llm.runVerdictInference(
+      onStep(StepGeneratingVerdict(call));
+      final verdictText = await _llm.runVerdictInference(
         LlmService.verdictPrompt(protocol, description),
       );
       await _llm.dispose();
@@ -166,6 +167,7 @@ class TriageEngine {
         transcript: description,
         functionCall: call,
         conditionLabel: _conditionLabel(call.condition),
+        verdictText: verdictText,
         timestamp: timestamp,
         latitude: pos?.latitude,
         longitude: pos?.longitude,

@@ -87,6 +87,24 @@ class _SuccessView extends StatelessWidget {
           ),
           const SizedBox(height: 14),
 
+          // LLM verdict text
+          if (result.verdictText.isNotEmpty) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F172A),
+                border: Border.all(color: borderColor.withOpacity(0.4)),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                result.verdictText,
+                style: TextStyle(color: textColor, fontSize: 12, height: 1.5),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+
           // Protocol steps
           Container(
             padding: const EdgeInsets.all(12),

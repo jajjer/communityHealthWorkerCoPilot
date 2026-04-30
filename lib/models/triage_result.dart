@@ -9,6 +9,7 @@ class TriageSuccess extends TriageResult {
   final String transcript;         // What the CHW said
   final FunctionCall functionCall; // The tool call Gemma 4 made (audit trail)
   final String conditionLabel;     // Human-readable, in selected language
+  final String verdictText;        // Plain-language verdict from second LLM inference
   final DateTime timestamp;
   final double? latitude;
   final double? longitude;
@@ -18,6 +19,7 @@ class TriageSuccess extends TriageResult {
     required this.transcript,
     required this.functionCall,
     required this.conditionLabel,
+    required this.verdictText,
     required this.timestamp,
     this.latitude,
     this.longitude,
@@ -46,5 +48,8 @@ class StepTranscribed extends AnalysisStep {
   const StepTranscribed(this.transcript) : super('Audio transcribed');
 }
 class StepQueryingProtocol extends AnalysisStep { const StepQueryingProtocol() : super('Querying WHO protocol…'); }
-class StepGeneratingVerdict extends AnalysisStep { const StepGeneratingVerdict() : super('Generating triage decision…'); }
+class StepGeneratingVerdict extends AnalysisStep {
+  final FunctionCall functionCall;
+  const StepGeneratingVerdict(this.functionCall) : super('Generating triage decision…');
+}
 class StepComplete extends AnalysisStep { const StepComplete() : super('Done'); }
