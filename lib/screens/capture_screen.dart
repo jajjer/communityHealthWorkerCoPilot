@@ -164,7 +164,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   void _onVoiceTap() {
     // Day 5-6: replace stub with AsrService.record() call
     setState(() => _isRecording = !_isRecording);
-    if (!_isRecording) {
+    if (_isRecording) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Voice input coming Day 5-6 (ASR integration)')),
       );
