@@ -66,11 +66,19 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
           _activeStep = 1;
         case StepQueryingProtocol():
           _steps[1] = _StepState('Querying WHO protocol…', status: _Status.active);
-          _functionCallLog.add('→ query_protocol(\n  condition="...",\n  age_group="child",\n  severity="moderate"\n)');
-        case StepGeneratingVerdict():
+        case StepGeneratingVerdict(:final functionCall):
           _steps[1] = _StepState('Protocol retrieved', status: _Status.done);
           _steps[2] = _StepState('Generating triage decision…', status: _Status.active);
           _activeStep = 2;
+          _functionCallLog.clear();
+          _functionCallLog.add(
+            '→ query_protocol(\n'
+            '  condition="${functionCall.condition.value}",\n'
+            '  age_group="${functionCall.ageGroup.value}",\n'
+            '  severity="${functionCall.severity.value}",\n'
+            '  symptom_flags=${functionCall.symptomFlags}\n'
+            ')',
+          );
         case StepComplete():
           _steps[2] = _StepState('Triage decision ready', status: _Status.done);
       }
