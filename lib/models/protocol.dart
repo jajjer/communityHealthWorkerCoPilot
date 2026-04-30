@@ -97,13 +97,24 @@ class Protocol {
   String get cacheKey => '${condition.value}_${ageGroup.value}_${severity.value}';
 
   factory Protocol.fromMap(Map<String, dynamic> map) {
+    final condition = Condition.fromString(map['condition'] as String);
+    final ageGroup = AgeGroup.fromString(map['age_group'] as String);
+    final severity = Severity.fromString(map['severity'] as String);
+    final verdict = TriageVerdict.values.where((v) => v.value == map['triage_verdict']).firstOrNull;
+
+    if (condition == null || ageGroup == null || severity == null || verdict == null) {
+      throw FormatException(
+        'Invalid protocol row: condition=${map["condition"]}, '
+        'age_group=${map["age_group"]}, severity=${map["severity"]}, '
+        'triage_verdict=${map["triage_verdict"]}',
+      );
+    }
+
     return Protocol(
-      condition: Condition.fromString(map['condition'] as String)!,
-      ageGroup: AgeGroup.fromString(map['age_group'] as String)!,
-      severity: Severity.fromString(map['severity'] as String)!,
-      verdict: TriageVerdict.values.firstWhere(
-        (v) => v.value == map['triage_verdict'],
-      ),
+      condition: condition,
+      ageGroup: ageGroup,
+      severity: severity,
+      verdict: verdict,
       steps: List<String>.from(jsonDecode(map['steps_json'] as String)),
       source: map['source'] as String,
     );

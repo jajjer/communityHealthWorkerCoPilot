@@ -56,8 +56,12 @@ class ProtocolDb {
   Future<void> _loadCache() async {
     final rows = await _db!.query('protocols');
     for (final row in rows) {
-      final p = Protocol.fromMap(row);
-      _cache[p.cacheKey] = p;
+      try {
+        final p = Protocol.fromMap(row);
+        _cache[p.cacheKey] = p;
+      } on FormatException {
+        // Skip rows with unrecognized enum values rather than crashing at startup
+      }
     }
   }
 
