@@ -1,0 +1,258 @@
+[
+  {
+    "condition": "malaria_uncomplicated",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Give artemether-lumefantrine per weight band (see dosing card)\", \"Paracetamol for fever if temp > 38.5°C\", \"Oral rehydration. Return in 2 days or immediately if convulsions.\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "malaria_uncomplicated",
+    "age_group": "child",
+    "severity": "moderate",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Give artemether-lumefantrine per weight band\", \"Paracetamol for fever\", \"Monitor for danger signs: convulsions, inability to drink, vomiting everything\", \"Return in 24 hours for follow-up\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "malaria_uncomplicated",
+    "age_group": "adult",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Artemether-lumefantrine 4 tablets at 0, 8, 24, 36, 48, 60 hours\", \"Paracetamol 1g for fever\", \"Rest and fluids. Return if no improvement in 48 hours.\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "malaria_severe",
+    "age_group": "child",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Do NOT give oral medication — aspiration risk\", \"Transfer to health facility IMMEDIATELY\", \"If convulsing: place in recovery position, protect airway\", \"Give rectal artesunate suppository if available and transfer will take > 6 hours\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "malaria_severe",
+    "age_group": "adult",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Refer to hospital immediately — IV artesunate required\", \"Monitor consciousness and breathing during transport\", \"Do not give oral antimalarials\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "pneumonia_mild",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Amoxicillin 40mg/kg/day in 2 doses for 5 days\", \"Paracetamol for fever\", \"Encourage fluids and breastfeeding\", \"Return immediately if breathing worsens, child cannot drink, or lips turn blue\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "pneumonia_mild",
+    "age_group": "infant",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Amoxicillin syrup per weight — see dosing card\", \"Keep warm, continue breastfeeding\", \"Return in 2 days or immediately if rapid breathing worsens\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "pneumonia_severe",
+    "age_group": "child",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Refer to hospital IMMEDIATELY\", \"Give first dose of amoxicillin before transfer if available\", \"Keep child upright during transport\", \"Count breaths — severe if > 50/min (infants) or > 40/min (children)\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "diarrhea_mild",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Oral rehydration salts (ORS) — give 50-100mL after each loose stool\", \"Continue breastfeeding\", \"Zinc 20mg daily for 10 days\", \"Return if child cannot drink, has blood in stool, or condition worsens\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "diarrhea_mild",
+    "age_group": "child",
+    "severity": "moderate",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"ORS 75mL/kg over 4 hours\", \"Zinc 20mg daily for 10 days\", \"Reassess after 4 hours — if improved, continue ORS at home\", \"Return immediately if sunken eyes worsen, skin pinch returns slowly, child cannot drink\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "diarrhea_severe",
+    "age_group": "child",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Refer to health facility IMMEDIATELY — IV fluids needed\", \"Give ORS sips during transport if child can swallow\", \"Signs of severe dehydration: sunken eyes, skin pinch very slow, lethargic\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "severe_acute_malnutrition",
+    "age_group": "child",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Do NOT give food or water — aspiration risk\", \"Transfer to nearest OTP/ITFC immediately\", \"If unconscious: recovery position, monitor breathing\", \"MUAC < 11.5cm or visible wasting with edema = SAM\"]",
+    "source": "MSF"
+  },
+  {
+    "condition": "severe_acute_malnutrition",
+    "age_group": "infant",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Emergency referral to ITFC\", \"Continue breastfeeding if conscious\", \"Do NOT give F-75 or F-100 formula outside facility\"]",
+    "source": "MSF"
+  },
+  {
+    "condition": "moderate_acute_malnutrition",
+    "age_group": "child",
+    "severity": "moderate",
+    "triage_verdict": "refer",
+    "steps_json": "[\"Enroll in OTP (Outpatient Therapeutic Program)\", \"Provide RUTF (Ready-to-Use Therapeutic Food) per weight\", \"MUAC 11.5-12.5cm = MAM — monitor weekly\", \"Return immediately if MUAC drops below 11.5cm\"]",
+    "source": "MSF"
+  },
+  {
+    "condition": "measles_mild",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Vitamin A 200,000 IU orally today and tomorrow\", \"Paracetamol for fever if temp > 38.5°C\", \"Fluids and rest\", \"Return if rash spreads to eyes, breathing worsens, or child cannot drink\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "measles_mild",
+    "age_group": "child",
+    "severity": "moderate",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Vitamin A 200,000 IU today and tomorrow\", \"Paracetamol for fever\", \"Check eyes daily — treat conjunctivitis with tetracycline eye ointment if present\", \"Return in 2 days for follow-up\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "measles_complicated",
+    "age_group": "child",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Refer to hospital IMMEDIATELY\", \"Give Vitamin A 200,000 IU before transfer\", \"Complications: pneumonia, encephalitis, severe eye involvement, severe malnutrition\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "tuberculosis_suspicion",
+    "age_group": "adult",
+    "severity": "moderate",
+    "triage_verdict": "refer",
+    "steps_json": "[\"Refer to health facility for sputum test\", \"Symptoms: cough > 2 weeks, night sweats, weight loss, blood in sputum\", \"Do NOT start TB treatment without lab confirmation\", \"Isolate patient from others during transport\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "tuberculosis_suspicion",
+    "age_group": "child",
+    "severity": "moderate",
+    "triage_verdict": "refer",
+    "steps_json": "[\"Refer to health facility for evaluation\", \"Child TB signs: failure to thrive, persistent cough, contact with known TB case\", \"Mantoux test or Xpert MTB/RIF required for diagnosis\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "hiv_aids_symptomatic",
+    "age_group": "adult",
+    "severity": "moderate",
+    "triage_verdict": "refer",
+    "steps_json": "[\"Refer for HIV testing and counseling\", \"Do NOT disclose HIV status without consent\", \"If on ART: check adherence and refer to ART clinic\", \"Opportunistic infections (thrush, PCP, TB) require hospital assessment\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "neonatal_sepsis",
+    "age_group": "neonate",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Emergency referral IMMEDIATELY — IV antibiotics required\", \"Signs: not feeding, convulsions, fast/slow breathing, hypothermia, bulging fontanelle\", \"Keep warm during transport — wrap in cloth, skin-to-skin if possible\", \"Do NOT give any oral medication\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "neonatal_jaundice",
+    "age_group": "neonate",
+    "severity": "moderate",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Refer to hospital for phototherapy assessment\", \"Jaundice visible before 24 hours of age = always emergency\", \"Jaundice with refusal to feed, lethargy, or high-pitched cry = emergency\", \"Ensure adequate feeding during transport\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "neonatal_jaundice",
+    "age_group": "neonate",
+    "severity": "mild",
+    "triage_verdict": "refer",
+    "steps_json": "[\"Refer to health facility for bilirubin check\", \"Physiological jaundice appears day 2-3, resolves by day 14\", \"Ensure frequent breastfeeding (8-12 times/day)\", \"Return immediately if baby becomes lethargic or stops feeding\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "fever_without_source",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Paracetamol for fever if temp > 38.5°C\", \"Test for malaria with RDT if available\", \"Ensure adequate fluids and rest\", \"Return in 2 days or immediately if: convulsions, stiff neck, rash, breathing difficulty\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "fever_without_source",
+    "age_group": "child",
+    "severity": "moderate",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Malaria RDT immediately\", \"Paracetamol for fever\", \"If RDT positive: treat per malaria protocol\", \"If RDT negative: seek source — ear, throat, urine\", \"Return in 24 hours\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "acute_respiratory_infection",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Not pneumonia — no antibiotics needed\", \"Paracetamol for fever and discomfort\", \"Saline nasal drops for congestion\", \"Encourage fluids\", \"Return if breathing becomes fast or child cannot drink\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "skin_infection",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Clean wound with clean water and soap\", \"Apply topical antiseptic (gentian violet or chlorhexidine)\", \"Amoxicillin if spreading or signs of cellulitis\", \"Return if red streaks appear or fever develops\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "skin_infection",
+    "age_group": "adult",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Clean with soap and water, apply antiseptic\", \"Amoxicillin 500mg 3x/day for 5 days if infected\", \"Lance abscess if fluctuant and pointing\", \"Return if fever, red streaks, or spreading redness\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "eye_infection",
+    "age_group": "child",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Clean eye with clean cloth and water\", \"Tetracycline eye ointment 3x/day for 7 days\", \"Return if vision blurred, eye swollen shut, or no improvement in 3 days\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "wound_trauma",
+    "age_group": "adult",
+    "severity": "mild",
+    "triage_verdict": "treat_locally",
+    "steps_json": "[\"Control bleeding with firm pressure for 10 minutes\", \"Clean wound thoroughly with soap and water\", \"Apply antiseptic\", \"Check tetanus immunization status — give TT if not up to date\", \"Return if signs of infection appear (heat, pus, red streaks)\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "wound_trauma",
+    "age_group": "adult",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Apply direct pressure to control bleeding — do not remove\", \"If possible arterial bleeding: apply tourniquet proximal to wound\", \"Immobilize fractures with available splint material\", \"Transfer to hospital IMMEDIATELY\"]",
+    "source": "WHO_IMCI"
+  },
+  {
+    "condition": "pregnancy_emergency",
+    "age_group": "adult",
+    "severity": "severe",
+    "triage_verdict": "emergency",
+    "steps_json": "[\"Refer to hospital IMMEDIATELY\", \"Danger signs: heavy bleeding, severe headache with visual disturbance, convulsions, no fetal movement\", \"Place in left lateral position during transport\", \"Do NOT delay for any reason\"]",
+    "source": "WHO_IMCI"
+  }
+]
