@@ -1,8 +1,15 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val localProperties = Properties().also { props ->
+    val f = rootProject.file("local.properties")
+    if (f.exists()) props.load(f.inputStream())
 }
 
 android {
@@ -19,6 +26,10 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.chwcopilot.chw_copilot"
@@ -28,6 +39,12 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -42,16 +59,10 @@ flutter {
 }
 
 dependencies {
-    // =========================================================
-    // DAY 1 SPIKE: Uncomment ONE of these.
-    //
-    // OPTION A — LiteRT-LM (primary):
-    // implementation("com.google.ai.edge.litert:litert-lm:1.0.0-beta1")
-    //
-    // OPTION B — MediaPipe fallback (if Option A fails):
-    // implementation("com.google.mediapipe:tasks-genai:0.10.22")
-    //
-    // Then uncomment the matching block in LiteRtBridge.kt.
-    // =========================================================
+    // LiteRT-LM — on-device Gemma 4 E2B inference.
+    // Model: adb push gemma-4-E2B-it.litertlm /data/local/tmp/ before running.
+    // Download from: https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm
+    implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

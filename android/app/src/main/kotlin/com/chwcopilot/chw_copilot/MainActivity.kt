@@ -6,13 +6,15 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
 
-    private lateinit var liteRtBridge: LiteRtBridge
+    private lateinit var llmBridge: LlmBridge
     private lateinit var whisperBridge: WhisperBridge
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        liteRtBridge = LiteRtBridge()
+        // Day 5+: swap to LiteRtBridge(this) once LiteRT-LM spike passes.
+        //llmBridge = LiteRtBridge(this)
+        llmBridge = KotlinBridge(this)
         whisperBridge = WhisperBridge()
 
         MethodChannel(
@@ -25,7 +27,7 @@ class MainActivity : FlutterActivity() {
                         result.error("INVALID_ARG", "path required", null)
                         return@setMethodCallHandler
                     }
-                    liteRtBridge.loadModel(path,
+                    llmBridge.loadModel(path,
                         onSuccess = { result.success(null) },
                         onError = { e -> result.error("LOAD_FAILED", e.message, null) }
                     )
@@ -35,12 +37,23 @@ class MainActivity : FlutterActivity() {
                         result.error("INVALID_ARG", "prompt required", null)
                         return@setMethodCallHandler
                     }
-                    liteRtBridge.runInference(prompt,
+                    llmBridge.runInference(prompt,
                         onSuccess = { text -> result.success(text) },
                         onError = { e -> result.error("INFERENCE_FAILED", e.message, null) }
                     )
                 }
-                "dispose" -> { liteRtBridge.dispose(); result.success(null) }
+                "dispose" -> { llmBridge.dispose(); result.success(null) }
+                "analyzeImage" -> {
+                    val imageBytes = call.argument<ByteArray>("imageBytes") ?: run {
+                        result.error("INVALID_ARG", "imageBytes required", null)
+                        return@setMethodCallHandler
+                    }
+                    val mimeType = call.argument<String>("mimeType") ?: "image/jpeg"
+                    llmBridge.analyzeImage(imageBytes, mimeType,
+                        onSuccess = { text -> result.success(text) },
+                        onError = { e -> result.error("ANALYZE_FAILED", e.message, null) }
+                    )
+                }
                 else -> result.notImplemented()
             }
         }

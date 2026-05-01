@@ -1,133 +1,79 @@
 package com.chwcopilot.chw_copilot
 
+import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-// DAY 1 SPIKE — this file determines whether we proceed with LiteRT-LM or fall back to MediaPipe.
+// On-device Gemma 4 E2B inference via LiteRT-LM.
 //
-// Add one of these to android/app/build.gradle dependencies:
+// To enable: swap MainActivity to use LiteRtBridge(this) instead of KotlinBridge(this).
 //
-//   OPTION A — LiteRT-LM (primary, D1):
-//   implementation 'com.google.ai.edge.litert:litert-lm:1.0.0-beta1'
+// Model setup (one-time):
+//   1. Download gemma-4-E2B-it.litertlm from:
+//      https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm
+//   2. adb push gemma-4-E2B-it.litertlm /data/local/tmp/
 //
-//   OPTION B — MediaPipe (Day 1 fallback, D13):
-//   implementation 'com.google.mediapipe:tasks-genai:0.10.22'
-//
-// If Option A compiles and loadModel() returns without error on your dev phone → LiteRT-LM confirmed.
-// If Option A fails to resolve or crashes on loadModel() → swap to Option B implementation below.
-//
-// DO NOT spend more than EOD Day 1 debugging LiteRT-LM bindings.
+// The model is ~1.5GB. First initialize() call takes 5-10s.
+// Subsequent inference calls: ~2-5s on mid-range Android.
 
 private const val TAG = "LiteRtBridge"
 
-class LiteRtBridge {
+class LiteRtBridge(private val context: Context) : LlmBridge {
+
+    private var engine: com.google.ai.edge.litertlm.Engine? = null
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    // -------------------------------------------------------------------------
-    // OPTION A: LiteRT-LM implementation
-    // Uncomment when 'com.google.ai.edge.litert:litert-lm' resolves.
-    // -------------------------------------------------------------------------
-    // private var session: com.google.ai.edge.litert.lm.LlmInferenceSession? = null
-    //
-    // fun loadModel(path: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-    //     scope.launch {
-    //         try {
-    //             val options = com.google.ai.edge.litert.lm.LlmInference.LlmInferenceOptions.builder()
-    //                 .setModelPath(path)
-    //                 .setMaxTokens(512)
-    //                 .setTopK(40)
-    //                 .setTemperature(0.1f)  // Low temp for structured JSON output
-    //                 .build()
-    //             val inference = com.google.ai.edge.litert.lm.LlmInference.createFromOptions(
-    //                 applicationContext, options
-    //             )
-    //             session = inference.createSession()
-    //             onSuccess()
-    //         } catch (e: Exception) {
-    //             Log.e(TAG, "LiteRT-LM loadModel failed", e)
-    //             onError(e)
-    //         }
-    //     }
-    // }
-    //
-    // fun runInference(prompt: String, onSuccess: (String) -> Unit, onError: (Exception) -> Unit) {
-    //     scope.launch {
-    //         try {
-    //             val result = session!!.generateResponse(prompt)
-    //             onSuccess(result)
-    //         } catch (e: Exception) {
-    //             Log.e(TAG, "LiteRT-LM inference failed", e)
-    //             onError(e)
-    //         }
-    //     }
-    // }
-    //
-    // fun dispose() {
-    //     session?.close()
-    //     session = null
-    //     Log.d(TAG, "LiteRT-LM session disposed")
-    // }
-
-    // -------------------------------------------------------------------------
-    // OPTION B: MediaPipe LLM Inference API fallback (D13)
-    // Uncomment if LiteRT-LM fails Day 1 spike. Uses Gemma 3 as interim model.
-    // -------------------------------------------------------------------------
-    // private var llmInference: com.google.mediapipe.tasks.genai.llminference.LlmInference? = null
-    //
-    // fun loadModel(path: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-    //     scope.launch {
-    //         try {
-    //             val options = com.google.mediapipe.tasks.genai.llminference.LlmInference.LlmInferenceOptions.builder()
-    //                 .setModelPath(path)
-    //                 .setMaxTokens(512)
-    //                 .build()
-    //             llmInference = com.google.mediapipe.tasks.genai.llminference.LlmInference.createFromOptions(
-    //                 context, options
-    //             )
-    //             onSuccess()
-    //         } catch (e: Exception) {
-    //             Log.e(TAG, "MediaPipe loadModel failed", e)
-    //             onError(e)
-    //         }
-    //     }
-    // }
-    //
-    // fun runInference(prompt: String, onSuccess: (String) -> Unit, onError: (Exception) -> Unit) {
-    //     scope.launch {
-    //         try {
-    //             val result = llmInference!!.generateResponse(prompt)
-    //             onSuccess(result)
-    //         } catch (e: Exception) {
-    //             Log.e(TAG, "MediaPipe inference failed", e)
-    //             onError(e)
-    //         }
-    //     }
-    // }
-    //
-    // fun dispose() {
-    //     llmInference?.close()
-    //     llmInference = null
-    // }
-
-    // -------------------------------------------------------------------------
-    // STUB — active until Day 1 spike confirms which option to uncomment.
-    // Returns a hardcoded valid function call JSON for UI testing.
-    // -------------------------------------------------------------------------
-    fun loadModel(path: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-        Log.d(TAG, "STUB loadModel — replace with Option A or B after Day 1 spike")
-        onSuccess()
+    override fun loadModel(path: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+        scope.launch {
+            try {
+                // CPU backend for emulator compatibility. On real hardware with GPU,
+                // swap to Backend.GPU() for ~5-10x faster inference.
+                val config = com.google.ai.edge.litertlm.EngineConfig(
+                    modelPath = path,
+                    backend = com.google.ai.edge.litertlm.Backend.CPU()
+                )
+                val e = com.google.ai.edge.litertlm.Engine(config)
+                e.initialize()
+                engine = e
+                Log.d(TAG, "LiteRT-LM CPU engine initialized: $path")
+                withContext(Dispatchers.Main) { onSuccess() }
+            } catch (e: Exception) {
+                Log.e(TAG, "LiteRT-LM loadModel failed", e)
+                withContext(Dispatchers.Main) { onError(e) }
+            }
+        }
     }
 
-    fun runInference(prompt: String, onSuccess: (String) -> Unit, onError: (Exception) -> Unit) {
-        Log.d(TAG, "STUB runInference — returning hardcoded measles example")
-        // Returns valid JSON for the UI to exercise the full triage flow without a real model
-        val stub = """{"function":"query_protocol","parameters":{"condition":"measles_mild","age_group":"child","severity":"moderate","symptom_flags":["fever","rash"]}}"""
-        onSuccess(stub)
+    override fun runInference(
+        prompt: String,
+        onSuccess: (String) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        scope.launch {
+            try {
+                val e = engine ?: run {
+                    withContext(Dispatchers.Main) {
+                        onError(IllegalStateException("Model not loaded — call loadModel first"))
+                    }
+                    return@launch
+                }
+                val response = e.createConversation().use { conversation ->
+                    conversation.sendMessage(prompt)
+                }
+                withContext(Dispatchers.Main) { onSuccess(response.toString()) }
+            } catch (e: Exception) {
+                Log.e(TAG, "LiteRT-LM inference failed", e)
+                withContext(Dispatchers.Main) { onError(e) }
+            }
+        }
     }
 
-    fun dispose() {
-        Log.d(TAG, "STUB dispose")
+    override fun dispose() {
+        engine?.close()
+        engine = null
+        Log.d(TAG, "LiteRT-LM engine disposed")
     }
 }

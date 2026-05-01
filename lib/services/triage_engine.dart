@@ -21,7 +21,7 @@ class TriageEngine {
   final AsrService _asr;
 
   // Model paths — set these to the actual paths on device
-  static const _llmModelPath = '/data/local/tmp/gemma4_e2b_int4.litert';
+  static const _llmModelPath = '/data/local/tmp/gemma-4-E2B-it.litertlm';
   static const _asrModelPath = '/data/local/tmp/whisper_small.bin';
 
   TriageEngine({

@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 import '../models/protocol.dart';
 
-// All 60 protocol rows (20 conditions × 3 severity) cached at startup.
+// 74 protocol rows (20 conditions × 3-5 severity/age variants) cached at startup.
 // Eliminates SQLite I/O from the latency-critical inference path.
 class ProtocolDb {
   static ProtocolDb? _instance;
@@ -24,7 +24,7 @@ class ProtocolDb {
     final dbPath = p.join(await getDatabasesPath(), 'protocols.db');
     _db = await openDatabase(
       dbPath,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE protocols (
@@ -37,6 +37,10 @@ class ProtocolDb {
             source TEXT NOT NULL
           )
         ''');
+        await _seed(db);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        await db.delete('protocols');
         await _seed(db);
       },
     );
