@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import '../providers.dart';
 import '../services/muac_service.dart';
 import 'analyzing_screen.dart';
@@ -12,25 +13,44 @@ class CaptureScreen extends ConsumerStatefulWidget {
   ConsumerState<CaptureScreen> createState() => _CaptureScreenState();
 }
 
-class _CaptureScreenState extends ConsumerState<CaptureScreen> {
+class _CaptureScreenState extends ConsumerState<CaptureScreen>
+    with SingleTickerProviderStateMixin {
   final _textController = TextEditingController();
   final _muacService = MuacService();
+  final _speech = SpeechToText();
 
   CameraController? _camera;
   bool _cameraReady = false;
   bool _isAnalyzingPhoto = false;
   MuacReading? _muacReading;
 
+  bool _speechAvailable = false;
+  bool _isListening = false;
+  String _listeningLocale = 'sw_KE';
+
+  late final AnimationController _pulseController;
+  late final Animation<double> _pulseAnim;
+
   @override
   void initState() {
     super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat(reverse: true);
+    _pulseAnim = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
     _initCamera();
+    _initSpeech();
   }
 
   @override
   void dispose() {
     _camera?.dispose();
     _textController.dispose();
+    _speech.stop();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -45,9 +65,59 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
         _camera = controller;
         _cameraReady = true;
       });
-    } catch (_) {
-      // Camera unavailable — text-only mode
+    } catch (_) {}
+  }
+
+  Future<void> _initSpeech() async {
+    final available = await _speech.initialize(
+      onError: (_) => setState(() => _isListening = false),
+      onStatus: (status) {
+        if (status == 'done' || status == 'notListening') {
+          setState(() => _isListening = false);
+        }
+      },
+    );
+    if (!mounted) return;
+
+    if (available) {
+      // Prefer Swahili if device has it, fall back to system locale
+      final locales = await _speech.locales();
+      final hasSwahili = locales.any((l) => l.localeId.startsWith('sw'));
+      setState(() {
+        _speechAvailable = true;
+        _listeningLocale = hasSwahili ? 'sw_KE' : '';
+      });
     }
+  }
+
+  Future<void> _onSpeakTap() async {
+    if (_isListening) {
+      await _speech.stop();
+      setState(() => _isListening = false);
+      return;
+    }
+
+    if (!_speechAvailable) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Speech recognition unavailable on this device')),
+      );
+      return;
+    }
+
+    setState(() => _isListening = true);
+    await _speech.listen(
+      localeId: _listeningLocale.isEmpty ? null : _listeningLocale,
+      onResult: (result) {
+        setState(() {
+          _textController.text = result.recognizedWords;
+          if (result.finalResult) _isListening = false;
+        });
+      },
+      listenFor: const Duration(seconds: 45),
+      pauseFor: const Duration(seconds: 3),
+      cancelOnError: true,
+      partialResults: true,
+    );
   }
 
   @override
@@ -114,13 +184,19 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _ActionButton(
-                      icon: Icons.mic,
-                      label: 'Speak',
-                      sublabel: 'Describe case',
-                      color: const Color(0xFF7C3AED),
-                      onTap: () => _showComingSoon(context, 'Voice input'),
-                    ),
+                    child: _isListening
+                        ? _ListeningButton(
+                            pulseAnim: _pulseAnim,
+                            onTap: _onSpeakTap,
+                            locale: _listeningLocale,
+                          )
+                        : _ActionButton(
+                            icon: Icons.mic,
+                            label: 'Speak',
+                            sublabel: _listeningLocale.startsWith('sw') ? 'Kiswahili / EN' : 'Describe case',
+                            color: const Color(0xFF7C3AED),
+                            onTap: _onSpeakTap,
+                          ),
                   ),
                 ],
               ),
@@ -131,17 +207,32 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                 style: const TextStyle(color: Colors.white, fontSize: 13),
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Describe symptoms…',
-                  hintStyle: const TextStyle(color: Color(0xFF4B5563), fontSize: 12),
+                  hintText: _isListening ? 'Listening…' : 'Describe symptoms…',
+                  hintStyle: TextStyle(
+                    color: _isListening ? const Color(0xFF7C3AED) : const Color(0xFF4B5563),
+                    fontSize: 12,
+                  ),
                   filled: true,
-                  fillColor: const Color(0xFF1F2937),
+                  fillColor: _isListening
+                      ? const Color(0xFF1A1030)
+                      : const Color(0xFF1F2937),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color(0xFF374151)),
+                    borderSide: BorderSide(
+                      color: _isListening ? const Color(0xFF7C3AED) : const Color(0xFF374151),
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color(0xFF374151)),
+                    borderSide: BorderSide(
+                      color: _isListening ? const Color(0xFF7C3AED) : const Color(0xFF374151),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: _isListening ? const Color(0xFF7C3AED) : const Color(0xFF6B7280),
+                    ),
                   ),
                 ),
                 onSubmitted: (_) => _onSubmit(context),
@@ -166,7 +257,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
               Row(
                 children: [
                   const Text('Language: ', style: TextStyle(color: Color(0xFF6B7280), fontSize: 11)),
-                  _LangBadge('Kiswahili ▾'),
+                  _LangBadge(_listeningLocale.startsWith('sw') ? 'Kiswahili ▾' : 'System ▾'),
                   const SizedBox(width: 6),
                   _LangBadge('+ EN'),
                 ],
@@ -198,7 +289,6 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
         fit: StackFit.expand,
         children: [
           CameraPreview(_camera!),
-          // Viewfinder overlay
           Center(
             child: Container(
               width: 180,
@@ -230,8 +320,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.camera_alt_outlined,
-              color: const Color(0xFF555555), size: 40),
+          Icon(Icons.camera_alt_outlined, color: const Color(0xFF555555), size: 40),
           const SizedBox(height: 8),
           const Text('Tap Photo to photograph MUAC tape',
               style: TextStyle(color: Color(0xFF555555), fontSize: 12)),
@@ -242,7 +331,9 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   Future<void> _onPhotoTap() async {
     if (!_cameraReady || _camera == null) {
-      _showComingSoon(context, 'Camera');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Camera unavailable')),
+      );
       return;
     }
     setState(() => _isAnalyzingPhoto = true);
@@ -269,14 +360,58 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   void _onSubmit(BuildContext context) {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
+    if (_isListening) _speech.stop();
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => AnalyzingScreen(input: text, isText: true)),
     );
   }
+}
 
-  void _showComingSoon(BuildContext context, String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$feature coming soon')),
+// Pulsing "Listening" button shown while ASR is active
+class _ListeningButton extends StatelessWidget {
+  final Animation<double> pulseAnim;
+  final VoidCallback onTap;
+  final String locale;
+
+  const _ListeningButton({
+    required this.pulseAnim,
+    required this.onTap,
+    required this.locale,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedBuilder(
+        animation: pulseAnim,
+        builder: (_, __) => Transform.scale(
+          scale: pulseAnim.value,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFDC2626),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFDC2626).withOpacity(0.4),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: const Column(
+              children: [
+                Icon(Icons.stop, color: Colors.white, size: 24),
+                SizedBox(height: 4),
+                Text('Listening…',
+                    style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700)),
+                Text('tap to stop', style: TextStyle(color: Colors.white70, fontSize: 10)),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

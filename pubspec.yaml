@@ -18,8 +18,8 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.0
 
-  # Audio recording — added Day 5-6 when ASR is integrated
-  # record: ^5.1.2
+  # Speech recognition — on-device via Android SpeechRecognizer, supports Swahili
+  speech_to_text: ^7.0.0
 
   # Camera (Day 7: MUAC tape reader)
   camera: ^0.11.0+2
