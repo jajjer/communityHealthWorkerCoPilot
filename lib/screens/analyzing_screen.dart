@@ -21,7 +21,6 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
     _StepState('Triage decision generated', status: _Status.pending),
   ];
   final List<String> _functionCallLog = [];
-  int _activeStep = 0;
 
   @override
   void initState() {
@@ -60,16 +59,13 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
       switch (step) {
         case StepTranscribing():
           _steps[0] = _StepState('Transcribing audio…', status: _Status.active);
-          _activeStep = 0;
         case StepTranscribed(:final transcript):
           _steps[0] = _StepState('Transcribed: "$transcript"', status: _Status.done);
-          _activeStep = 1;
         case StepQueryingProtocol():
           _steps[1] = _StepState('Querying WHO protocol…', status: _Status.active);
         case StepGeneratingVerdict(:final functionCall):
           _steps[1] = _StepState('Protocol retrieved', status: _Status.done);
           _steps[2] = _StepState('Generating triage decision…', status: _Status.active);
-          _activeStep = 2;
           _functionCallLog.clear();
           _functionCallLog.add(
             '→ query_protocol(\n'
@@ -188,7 +184,7 @@ class _StepState {
 
 class _StepRow extends StatelessWidget {
   final _StepState step;
-  const _StepRow({super.key, required this.step});
+  const _StepRow({required this.step});
 
   @override
   Widget build(BuildContext context) {

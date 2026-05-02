@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import '../providers.dart';
 import '../services/muac_service.dart';
 import 'analyzing_screen.dart';
 
@@ -115,8 +114,10 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen>
       },
       listenFor: const Duration(seconds: 45),
       pauseFor: const Duration(seconds: 3),
-      cancelOnError: true,
-      partialResults: true,
+      listenOptions: SpeechListenOptions(
+        cancelOnError: true,
+        partialResults: true,
+      ),
     );
   }
 
@@ -294,7 +295,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen>
               width: 180,
               height: 60,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -306,7 +307,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen>
             child: Center(
               child: Text('Align MUAC tape in frame',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 9,
                     shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
                   )),
@@ -394,7 +395,7 @@ class _ListeningButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFDC2626).withOpacity(0.4),
+                  color: const Color(0xFFDC2626).withValues(alpha: 0.4),
                   blurRadius: 12,
                   spreadRadius: 2,
                 ),
@@ -475,7 +476,7 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: onTap == null ? color.withOpacity(0.5) : color,
+          color: onTap == null ? color.withValues(alpha: 0.5) : color,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
